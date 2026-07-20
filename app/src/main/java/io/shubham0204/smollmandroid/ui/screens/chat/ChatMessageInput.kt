@@ -2,6 +2,9 @@ package io.shubham0204.smollmandroid.ui.screens.chat
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,6 +56,15 @@ fun MessageInput(
     } else {
         var questionText by rememberSaveable { mutableStateOf(defaultQuestion ?: "") }
         val keyboardController = LocalSoftwareKeyboardController.current
+        Column {
+        SamplePrompts(
+            visible = questionText.isEmpty() &&
+                modelLoadingState == ModelLoadingState.SUCCESS &&
+                !isGeneratingResponse,
+        ) { picked ->
+            keyboardController?.hide()
+            onEvent(ChatScreenUIEvent.ChatEvents.SendUserQuery(picked))
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -156,6 +169,32 @@ fun MessageInput(
                         }
                     }
                 }
+            }
+        }
+        }
+    }
+}
+
+private val SAMPLE_PROMPTS = listOf(
+    "In what concentration is gentian violet used to treat Candida albicans?",
+    "What interface does NVMe use for high transfer speeds?",
+    "For what reasons was St. Theodore the Studite exiled?",
+    "What was Angkor Wat's role in the Khmer Empire?",
+)
+
+@Composable
+private fun SamplePrompts(visible: Boolean, onPick: (String) -> Unit) {
+    AnimatedVisibility(visible) {
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            SAMPLE_PROMPTS.forEach { prompt ->
+                AssistChip(onClick = { onPick(prompt) }, label = { Text(prompt) })
             }
         }
     }

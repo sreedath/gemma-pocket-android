@@ -21,6 +21,12 @@ jobs:
           mkdir -p app/src/main/assets
           curl -L --fail -o app/src/main/assets/gemma-2-2b-qa-raft-Q4_K_M.gguf \
             https://huggingface.co/thesreedath/gemma-2-2b-qa-raft-GGUF/resolve/main/gemma-2-2b-qa-raft-Q4_K_M.gguf
+          curl -L --fail -o app/src/main/assets/minilm.onnx \
+            https://huggingface.co/thesreedath/gemma-2-2b-qa-raft-GGUF/resolve/main/minilm.onnx
+          curl -L --fail -o app/src/main/assets/minilm_tokenizer.json \
+            https://huggingface.co/thesreedath/gemma-2-2b-qa-raft-GGUF/resolve/main/minilm_tokenizer.json
+          curl -L --fail -o app/src/main/assets/retrieval_pack.json \
+            https://huggingface.co/thesreedath/gemma-2-2b-qa-raft-GGUF/resolve/main/retrieval_pack.json
           ls -lh app/src/main/assets/
       - run: chmod +x gradlew
       - name: Build APK

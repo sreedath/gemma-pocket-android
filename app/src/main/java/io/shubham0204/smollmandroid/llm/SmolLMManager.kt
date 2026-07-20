@@ -36,7 +36,7 @@ private const val LOGTAG = "[SmolLMManager-Kt]"
 private val LOGD: (String) -> Unit = { Log.d(LOGTAG, it) }
 
 @Single
-class SmolLMManager(private val appDB: AppDB) {
+class SmolLMManager(private val appDB: AppDB, private val ragEngine: RagEngine) {
     private val instance = SmolLM()
 
     // Use ReentrantLock for thread-safe state management without suspending
@@ -163,7 +163,7 @@ class SmolLMManager(private val appDB: AppDB) {
                     var response = ""
 
                     val duration = measureTime {
-                        instance.getResponseAsFlow(query).collect { piece ->
+                        instance.getResponseAsFlow(ragEngine.buildRagPrompt(query)).collect { piece ->
                             response += piece
                             withContext(Dispatchers.Main) {
                                 onPartialResponseGenerated(response)
