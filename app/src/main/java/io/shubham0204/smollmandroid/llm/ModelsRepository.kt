@@ -51,7 +51,7 @@ class ModelsRepository(private val context: Context, private val appDB: AppDB) {
      * context size + chat template straight from the GGUF, exactly like import.
      * Safe to call repeatedly; it no-ops once a model is registered.
      */
-    fun installBundledModel() {
+    suspend fun installBundledModel() {
         if (appDB.getModelsList().isNotEmpty()) return
         if (!hasBundledModel()) return
         val dest = File(context.filesDir, BUNDLED_ASSET)
