@@ -83,7 +83,7 @@ ksp {
 }
 
 dependencies {
-    implementation("io.gitlab.shubham0204:sentence-embeddings:v6.1")
+    implementation("com.github.shubham0204.Sentence-Embeddings-Android:sentence_embeddings:v6")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
