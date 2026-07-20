@@ -2,7 +2,9 @@ name: Debug APK
 on:
   workflow_dispatch:
   push:
-    paths: ['.github/workflows/debug-build.yml']
+    branches: [main]
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,9 +16,22 @@ jobs:
       - uses: nttld/setup-ndk@v1
         id: ndk
         with: { ndk-version: r27c, add-to-path: true }
+      - name: Download bundled GGUF model into assets
+        run: |
+          mkdir -p app/src/main/assets
+          curl -L --fail -o app/src/main/assets/gemma-2-2b-qa-raft-Q4_K_M.gguf \
+            https://huggingface.co/thesreedath/gemma-2-2b-qa-raft-GGUF/resolve/main/gemma-2-2b-qa-raft-Q4_K_M.gguf
+          ls -lh app/src/main/assets/
       - run: chmod +x gradlew
-      - run: ./gradlew assembleDebug --stacktrace
+      - name: Build APK
         env:
           ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
-      - uses: actions/upload-artifact@v4
-        with: { name: debug-apk, path: 'app/build/outputs/apk/debug/*.apk' }
+        run: ./gradlew assembleDebug --stacktrace
+      - name: Rename APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk gemma-pocket.apk
+      - name: Publish to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: gemma-pocket-latest
+          name: Gemma Pocket (bundled, offline)
+          files: gemma-pocket.apk
