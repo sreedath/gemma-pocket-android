@@ -1,0 +1,22 @@
+name: Debug APK
+on:
+  workflow_dispatch:
+  push:
+    paths: ['.github/workflows/debug-build.yml']
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { submodules: 'true' }
+      - uses: actions/setup-java@v4
+        with: { java-version: '17', distribution: 'temurin', cache: gradle }
+      - uses: nttld/setup-ndk@v1
+        id: ndk
+        with: { ndk-version: r27c, add-to-path: true }
+      - run: chmod +x gradlew
+      - run: ./gradlew assembleDebug --stacktrace
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+      - uses: actions/upload-artifact@v4
+        with: { name: debug-apk, path: 'app/build/outputs/apk/debug/*.apk' }
