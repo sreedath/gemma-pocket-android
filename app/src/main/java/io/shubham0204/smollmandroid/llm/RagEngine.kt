@@ -59,6 +59,7 @@ class RagEngine(private val context: Context) {
             outputTensorName = "sentence_embedding",
             useFP16 = false,
             useXNNPack = false,
+            normalizeEmbeddings = false,
         )
         val json = context.assets.open(PACK).bufferedReader().use { it.readText() }
         val obj = JSONObject(json)
